@@ -69,6 +69,7 @@ def makePrediction(inputs):
         the middle finger, and 4 means to flex the ring and pinky finger.
     """
     
+    # Neural network with 2 Hidden Layers
     mOps.dotProduct(inputs, var.w1, var.layer1_raw)
     mOps.addBiases(var.layer1_raw, var.b1)
     leaky_relu(var.layer1_raw, var.layer1_act)

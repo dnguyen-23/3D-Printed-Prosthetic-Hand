@@ -102,15 +102,15 @@ def readEMG(thresholdVal, IMemg, RPemg, predict):
         if predict == True:
             # This is where the motor should be activated. Instead of printing the integer
             # the integer should be used to actuate the motors on the prosthetic hand 
-            #predIdx = fP.makePrediction(readings)
-            #predictedGesture = (var.gestures[predIdx])
-            #print(predictedGesture)
-            print(" ")
-            # i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=100000)
-            # addr = i2c.scan()[0] #getting the address of the peripheral
+            predIdx = fP.makePrediction(readings)
+            predictedGesture = (var.gestures[predIdx])
+            print(predictedGesture)
+            # print(" ")
+            i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=100000)
+            addr = i2c.scan()[0] #getting the address of the peripheral
 
-            # i2c.writeto(addr, str(predIdx))
-            # time.sleep(2)
+            i2c.writeto(addr, str(predIdx))
+            time.sleep(2)
             
         else:
             return readings
