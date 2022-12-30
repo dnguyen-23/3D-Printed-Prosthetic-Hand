@@ -88,8 +88,8 @@ def backProp(alpha, w1, w2, w3, b1, b2, b3, input, startIdx, probs, layer1_act, 
     # learning_rate = 0.6 #best for 50 epochs and 505 samples
     # learning_rate = 0.07 #best for 50 epochs and 50 samples
     # learning_rate = 0.018 #best for 40 * 149 epochs
-    learning_rate = 0.093
-
+    learning_rate = 0.015
+    # learning_rate = 0.093 #best for 30 epochs
     # print(dW3)
     # print()
     # print(dW2)
@@ -112,7 +112,7 @@ def loss(correctOutputs, numSamples):
     return np.sum(-np.log(correctOutputs)) / numSamples
 
 
-#For testing the accuracy before optimization
+# For testing the accuracy before optimization
 # layer1_raw = x_test.dot(w1) + b1
 # layer1_act = ReLu(layer1_raw)
 # layer2_raw = layer1_act.dot(w2) + b2
@@ -133,9 +133,11 @@ def loss(correctOutputs, numSamples):
 #     if predictions[i] == y_test[i]:
 #         numCorrect += 1
 # print(numCorrect / len(x_test))
-model = models.load_model("PICO_Incomplete_SoftHandGesturePredicterModel2-4-4-5")
-# epochs = 50
-epochs = 30
+# model = models.load_model("PICO_Incomplete_SoftHandGesturePredicterModel2-4-4-5")
+
+# epochs = 100
+epochs = 50
+# epochs = 30
 alpha = 0.2
 #optimal epoch = 50
 batch_size = 1
@@ -144,10 +146,9 @@ for e in range(epochs):
     list = []
     accuracy = 0
     numSamples = len(x_train)
+    # print(numSamples)
     # numSamples = 1
     for idx in range(numSamples):
-        # input = [ 0.26632181277180134 ,  0.649039444571603]
-        # input = [x_train.get("Index Middle Finger")[idx] / 65535, x_train.get("Ring Pinky Finger")[idx] / 65535]
 
         input = [x_train[idx][0], x_train[idx][1]]
         input = np.array([input])

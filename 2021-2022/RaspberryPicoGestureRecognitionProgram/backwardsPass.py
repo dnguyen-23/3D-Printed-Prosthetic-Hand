@@ -1,15 +1,47 @@
 import variables as var
 import matrixOps as mOps
 import forwardPass as fP
-def dRelu(layer_raw, alpha, deriv):
+def dRelu(layer_raw, deriv):
+    """Takes the derivative of the Sparse Categorical Cross Entropy
+    loss function with respect to derivative of the Leaky ReLu
+    activated values of a layer.
+    
+    :param layer_raw: the raw values of the layer that the Leaky
+        ReLu activation function was performed on to obtain the
+        activated values.
+    :type layer_raw: list of list of float
+    :param deriv: holds the derivatives of the Sparse Categorical
+        Cross Entropy loss function with respect to the derivative
+        of each Leaky ReLu activated value of the layer that layer_raw
+        belongs to
+    :type deriv: list of list of float
+    """
     for i in range(len(layer_raw)):
         for j in range(len(layer_raw[0])):
             if layer_raw[i][j] <= 0.0:
-                deriv[i][j] *= alpha
+                deriv[i][j] *= var.reluCoef
             elif layer_raw[i][j] > 0.0:
                 deriv[i][j] *= 1
     
 def backProp(inputs, labelIdx):
+    """Takes a set of inputs as training data and optimizes the neural network
+    through Gradient Descent, using the training data and its label. The neural
+    network is optimized by taking the derivative of the Sparse Categorical
+    Cross Entropy loss function with respect to each parameter/weight and bias
+    in the neural network. The gradient value/derivative found will then be
+    applied to the corresponding weight or bias after being multiplied by a
+    learning rate.
+    
+    :param inputs: the EMG recording of a gesture made up of the
+        highest average values recorded for each of the 2 EMG sensors
+        while the gesture was performed. Values must be normalized by
+        dividing by 65535, the max analog value.
+    :type inputs: list of list of float
+    :param labelIdx: the label for what the gesture performed was. 0 is a fist, 1 is
+        the index finger flexed, 2 is the index and middle finger flexed, 3 is the
+        middle finger flexed, and 4 is the ring and pinky finger flexed.
+    :type labelIdx: int
+    """
     #This function needs to run in order to get raw and activation values for each layer
     fP.makePrediction(inputs)
     
@@ -28,7 +60,7 @@ def backProp(inputs, labelIdx):
     
     # Getting derivative of loss with respect to derivative of the raw second layer
     mOps.dotProduct(dL3raw, mOps.transpose(var.w3), dL2raw)
-    dRelu(var.layer2_raw, var.reluCoef, dL2raw)
+    dRelu(var.layer2_raw, dL2raw)
     
     mOps.dotProduct(mOps.transpose(var.layer1_act), dL2raw, dW2)
     mOps.calcDBias(dL2raw, var.b2)
@@ -36,7 +68,7 @@ def backProp(inputs, labelIdx):
     
     # Getting derivative of loss with respect to derivative of the raw first layer
     mOps.dotProduct(dL2raw, mOps.transpose(var.w2), dL1raw)
-    dRelu(var.layer1_raw, var.reluCoef, dL1raw)
+    dRelu(var.layer1_raw, dL1raw)
     
     mOps.dotProduct(mOps.transpose(inputs), dL1raw, dW1)
     mOps.calcDBias(dL1raw, var.b1)
@@ -44,39 +76,3 @@ def backProp(inputs, labelIdx):
     mOps.applyDWeights(dW1, var.w1)
     mOps.applyDWeights(dW2, var.w2)
     mOps.applyDWeights(dW3, var.w3)
-# 
-# # void testAccuracy()
-# # {
-# #   float testingInputs[] = {0.0, 0.461, 0.162, 0.0, 0.202, 0.0, 0.115, 0.118, 0.135, 0.552, 0.12, 0.132, 0.019, 0.0, 0.307, 0.0, 0.274, 0.267, 0.395, 0.0};
-# #   int testingLabels[] = {4, 2, 3, 1, 4, 1, 2, 3, 1, 0};
-# #   int numTestingInputs = sizeof(testingLabels) / sizeof(testingLabels[0]);
-# #   int idxMidInputIdx = 0;
-# #   int rPInputIdx = 1;
-# #   int numCorrect = 0;
-# #   for (int i = 0; i < numTestingInputs; i++)
-# #   {
-# #     float input[]= {testingInputs[idxMidInputIdx], testingInputs[rPInputIdx]};
-# #     int gestureIdx = makePrediction(input)
-# #     if (gestureIdx == testingLabels[i])
-# #     {
-# #       numCorrect++;
-# #     }
-# # 
-# #     if ((idxMidInputIdx) < (numTestingInputs * 2))
-# #     {
-# #       idxMidInputIdx += 2;
-# #     }
-# # 
-# #     if ((rPInputIdx + 2) < (numTestingInputs * 2))
-# #     {
-# #       rPInputIdx += 2;
-# #     }
-# # 
-# # 
-# #     delay(250);
-# #   }
-# # 
-# #   float accuracy = ((float) numCorrect) / numTestingInputs;
-# #   Serial.println(accuracy);
-# # 
-# # }
