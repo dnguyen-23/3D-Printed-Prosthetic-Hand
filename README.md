@@ -1,3 +1,8 @@
 # 3D-Printed-Prosthetic-Hand
 
-The demonstration video is in the master branch and because the file size is larger than what Github allows users to upload, the file must be downloaded.
+This repository holds:
+
+-Files for the 3D models of the prosthetic hand
+-Code for the computer scripts created to control the hand
+
+Files are separated into the different versions designed each year.
